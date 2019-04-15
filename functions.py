@@ -119,7 +119,7 @@ def execute_collision(heroes, hero1, hero2):
     for hero in heroes:
         counter = 0
         for bullet in hero.bullets:
-            if bullet != None:
+            if bullet is not None:
                 bullet.movement()
                 if bullet.is_out_of_boundaries():
                     hero.bullets[counter] = None
@@ -177,7 +177,7 @@ def create_new_individua(fitness, weights_length, biases_length):
     return [biases, weights]
 
 
-def return_inputs(hero1, hero2):
+def return_inputs(hero1, hero2, treasure):
     """   return [distance_in_direction(hero1.position_x, hero1.position_y, hero1.angle, "hero", hero2) / 1200,
                distance_in_direction(hero1.position_x, hero1.position_y, hero1.angle, "bullet", hero2.bullets) / 1200,
                distance_in_direction(hero1.position_x, hero1.position_y, hero1.angle, "wall", None) / 1200,
@@ -206,6 +206,7 @@ def return_inputs(hero1, hero2):
                distance_in_direction(hero1.position_x, hero1.position_y, hero1.angle - (0.5 * math.pi), "wall",
                                      None) / 1200]"""
     bullets = []
+    treasure_inputs = []
     for i in range(len(hero2.bullets)):
         if hero2.bullets[i] == None:
             bullets.append([0, 0])
@@ -213,6 +214,12 @@ def return_inputs(hero1, hero2):
             bullets.append([1 - distance(hero1.position_x, hero1.position_y, hero2.bullets[i].position_x,
                                          hero2.bullets[i].position_y) / math.sqrt(GAME_WIDTH ** 2 + GAME_HEIGHT ** 2),
                             angle(hero1, hero2.bullets[i]) / (math.pi * 2)])
+    if treasure is None:
+        treasure_inputs = [0, 0]
+    else:
+        treasure_inputs = [(1 - distance(hero1.position_x,hero1.position_y, treasure.position_x,treasure.position_y) / math.sqrt(GAME_WIDTH ** 2 + GAME_HEIGHT ** 2)),
+                                angle(hero1,treasure) / (math.pi * 2)]
+
     return ([abs((GAME_WIDTH / 2 - hero1.position_x) / (GAME_WIDTH / 2)),
              abs((GAME_HEIGHT / 2 - hero1.position_y) / (GAME_HEIGHT / 2)),
              1 - (distance(hero1.position_x, hero1.position_y, hero2.position_x, hero2.position_y) / math.sqrt(
@@ -224,6 +231,8 @@ def return_inputs(hero1, hero2):
              bullets[1][1],
              bullets[2][0],
              bullets[2][1],
+             treasure_inputs[0],
+             treasure_inputs[1],
              hero1.magazine / 3,
              hero1.reload / 60,
              hero1.angle / (2 * math.pi),
@@ -235,25 +244,18 @@ def return_inputs(hero1, hero2):
 def create_new_individual(fitness, weights_length, biases_length):
     best_fitness = max(fitness)
     average_fitness = int(sum(fitness) / len(fitness))
-    worst_fitness = min(fitness)
     weights = []
     biases = []
     dir_path = "D:\\projekty\\warIO\\src\\population\\object"
     passed = False
 
-    while not passed:
-        probability = random.randint(int(average_fitness), int(best_fitness))
-        file_number1 = random.randrange(0, len(fitness))
-        file_number2 = random.randrange(0, len(fitness))
-        if fitness[file_number1] >= probability and fitness[file_number2] >= probability:
-            passed = True
     for i in range(weights_length):
+        while not passed:
+            probability = random.randint(int(average_fitness), int(best_fitness))
+            file_number = random.randrange(0, len(fitness))
+            if fitness[file_number] >= probability:
+                passed = True
         mutation = random.randint(1, 1001)
-        rand = random.randrange(2)
-        if rand == 0:
-            file_number = file_number1
-        else:
-            file_number = file_number2
         if mutation <= MUTATION_RATE:
             weights.append(str(random.uniform(WEIGHTS_DOWN_CAP, WEIGHTS_TOP_CAP)) + '\n')
         else:
@@ -264,12 +266,12 @@ def create_new_individual(fitness, weights_length, biases_length):
             file.close()
 
     for i in range(biases_length):
+        while not passed:
+            probability = random.randint(int(average_fitness), int(best_fitness))
+            file_number = random.randrange(0, len(fitness))
+            if fitness[file_number] >= probability:
+                passed = True
         mutation = random.randint(1, 1001)
-        rand = random.randrange(2)
-        if rand == 0:
-            file_number = file_number1
-        else:
-            file_number = file_number2
         if mutation <= MUTATION_RATE:
             biases.append(str(random.uniform(BIASES_DOWN_CAP, BIASES_TOP_CAP)) + '\n')
         else:
@@ -284,7 +286,7 @@ def create_new_individual(fitness, weights_length, biases_length):
 
 def fitness_function(hero1, hero2):
     # return math.sqrt(GAME_HEIGHT **2 + GAME_WIDTH** 2) - distance(hero1.position_x,hero1.position_y,hero2.position_x,hero2.position_y)
-    return (hero1.health * 10 + ((10 - hero2.health) * 10))
+    return score(hero1,hero2)
 
 
 def write_start_to_replay(file, hero1, hero2):
@@ -294,3 +296,6 @@ def write_start_to_replay(file, hero1, hero2):
     file.write(str(hero2.position_x) + '\n')
     file.write(str(hero2.position_y) + '\n')
     file.write(str(hero2.angle) + '\n')
+
+def score(hero1, hero2):
+    return hero1.points + hero1.health * 10 + (100 - hero2.health * 10)

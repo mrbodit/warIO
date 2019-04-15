@@ -5,6 +5,7 @@ from src.dff_neural_network import DFF_Neural_Network
 from src.functions import *
 from src.global_variables import *
 from src.hero import Hero
+from src.treasure import try_respawn_treasure, treasure_collision
 
 
 def let_them_fight_population(counter1,counter2):
@@ -35,6 +36,8 @@ def let_them_fight_population(counter1,counter2):
     ai_B.create_network()
     ai_B.set_connections()
 
+    treasure = None
+
     replay_A = open(dir_name_A + "\\replay.txt", "w+")
     replay_B = open(dir_name_B + "\\replay.txt", "w+")
 
@@ -49,15 +52,25 @@ def let_them_fight_population(counter1,counter2):
     while running:
         replay_string = ["_", "_", "_", "_", "_", "_"]
 
-
-
-        ai_A_move = ai_A.calculate_output(return_inputs(hero1,hero2))
-        ai_B_move = ai_B.calculate_output(return_inputs(hero2,hero1))
+        ai_A_move = ai_A.calculate_output(return_inputs(hero1, hero2, treasure))
+        ai_B_move = ai_B.calculate_output(return_inputs(hero2, hero1, treasure))
 
         do_ai_moves(ai_A_move[-1], replay_string, hero1,0)
         do_ai_moves(ai_B_move[-1], replay_string, hero2,1)
 
-        execute_collision(heroes,hero1, hero2)
+
+        if treasure is None:
+            treasure_replay = False
+        treasure = try_respawn_treasure(treasure)
+        if treasure is not None and treasure_replay is False:
+            replay_A.write(str(treasure.position_x) + "\n")
+            replay_A.write(str(treasure.position_y) + "\n")
+            replay_B.write(str(treasure.position_x) + "\n")
+            replay_B.write(str(treasure.position_y) + "\n")
+            treasure_replay is True
+
+        execute_collision(heroes, hero1, hero2)
+        treasure = treasure_collision([hero1, hero2], treasure)
 
         replay_A.write(''.join(replay_string) + "\n")
         replay_B.write(''.join(replay_string) + "\n")

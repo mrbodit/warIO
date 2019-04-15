@@ -12,8 +12,9 @@ wario_image = pygame.image.load('D:\\projekty\\warIO\\images\\wario.jpg')
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((GAME_WIDTH, GAME_HEIGHT))
 pygame.display.set_caption('Tutorial 1')
-
 running = True
+
+initialize_images()
 while running:
   screen = pygame.display.set_mode((GAME_WIDTH, GAME_HEIGHT))
   screen.fill((255, 255, 255))
