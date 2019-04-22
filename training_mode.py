@@ -12,8 +12,8 @@ from src.let_them_fight_population import let_them_fight_population
 from src.replay import *
 from src.player_vs_AI import *
 
-def training():
 
+def training():
     running = True
     counter = 0
     fitness = []
@@ -37,9 +37,8 @@ def training():
                     replay("D:\\projekty\\warIO\\src\\population\\object" + str(number) + "\\replay.txt")
 
                 if event.key == pygame.K_g:
-                    generations = int(input("Enter number of generations: "))
-                    number_of_objects = int(input("Enter number of objects: "))
-
+                    generations = int_from_string("Enter number of generations: ")
+                    number_of_objects = int_from_string("Enter number of objects: ")
                     for j in range(0, generations):
                         matches = []
                         for i in range(0, number_of_objects):
@@ -58,41 +57,47 @@ def training():
                                 matches[enemy_number].append(b)
                         for i in range(0, number_of_objects):
                             fitness[i] = sum(matches[i]) / len(matches[i])
-                        print(fitness)
-                        print("generacja: " + str(number_of_generations) + "  average fitness: " + str(sum(fitness) / len(fitness)))
+                        print("generacja: " + str(number_of_generations) + "  average fitness: " + str(
+                            sum(fitness) / len(fitness)))
 
                 if event.key == pygame.K_y:
-                    generations = int(input("Enter number of generations: "))
-                    number_of_objects = int(input("Enter number of objects: "))
-                    for j in range(0,generations):
+
+                    generations = int_from_string("Enter number of generations: ")
+                    number_of_objects = int_from_string("Enter number of objects: ")
+                    for j in range(0, generations):
                         number_of_generations += 1
-                        generate_population(fitness,WEIGHTS_LENGTH,BIASES_LENGTH,generations,number_of_objects)
-                        for i in range(0,number_of_objects,2):
-                            [a,b] = let_them_fight_population(i,i+1)
+                        generate_population(fitness, WEIGHTS_LENGTH, BIASES_LENGTH, generations, number_of_objects)
+                        for i in range(0, number_of_objects, 2):
+                            [a, b] = let_them_fight_population(i, i + 1)
                             fitness[i] = a
-                            fitness[i+1] = b
-                        print("generacja: " + str(number_of_generations) + "  average fitness: " + str(sum(fitness) / len(fitness)))
+                            fitness[i + 1] = b
+                        print("generacja: " + str(number_of_generations) + "  average fitness: " + str(
+                            sum(fitness) / len(fitness)))
 
                 if event.key == pygame.K_h:
-                    generations = int(input("Enter number of generations: "))
-                    number_of_objects = int(input("Enter number of objects: "))
+                    generations = int_from_string("Enter number of generations: ")
+                    number_of_objects = int_from_string("Enter number of objects: ")
                     for j in range(0, generations):
+                        fitness_of_enemy = 0
                         matches = []
                         number_of_generations += 1
                         generate_population(fitness, WEIGHTS_LENGTH, BIASES_LENGTH, generations, number_of_objects)
                         for i in range(0, number_of_objects):
                             matches.append([])
                             for k in range(3):
-                                [a,b] = let_them_fight_population(i, AI_PATH)
+                                [a, b] = let_them_fight_population(i, AI_PATH)
+                                fitness_of_enemy += b
                                 matches[i].append(a)
                             fitness[i] = sum(matches[i]) / len(matches[i])
-                        print("generacja: " + str(number_of_generations) + "  average fitness: " + str(sum(fitness) / len(fitness)))
+                        print("generacja: " + str(number_of_generations) + "  average fitness: " + str(
+                            sum(fitness) / len(fitness)) + "fitness of enemy: " + str(
+                            fitness_of_enemy / (len(matches) * 3)))
 
                 if event.key == pygame.K_p:
                     for i in range(len(fitness)):
-                        print("generacja: " + str( number_of_generations) + "   " + str(i) + ": " + str(fitness[i]))
-                    print("generacja: " + str( number_of_generations) + "  average fitness: " + str(sum(fitness)/len(fitness)))
-
+                        print("generacja: " + str(number_of_generations) + "   " + str(i) + ": " + str(fitness[i]))
+                    print("generacja: " + str(number_of_generations) + "  average fitness: " + str(
+                        sum(fitness) / len(fitness)))
 
         display_text(screen, GAME_WIDTH / 2, 100, 'WARIO', 255, 0, 0, 90)
         display_text(screen, GAME_WIDTH / 2, 200, 'Ai vs Ai  (press "w" to start)', 0, 0, 0, 50)
@@ -103,6 +108,3 @@ def training():
         display_text(screen, GAME_WIDTH / 2, 700, 'generate populations vs one AI (press "h" to start)', 0, 0, 0, 50)
 
         pygame.display.update()
-
-
-

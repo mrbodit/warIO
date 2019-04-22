@@ -54,14 +54,20 @@ def replay(replay_path):
     if replay[string_counter][2] == "a":
         hero1.rotate("left")
 
-    if replay[string_counter][5] == "a":
+    if replay[string_counter][3] == "s":
+        hero1.teleport()
+
+    if replay[string_counter][6] == "a":
         hero2.rotate("left")
 
-    if replay[string_counter][4] == "d":
+    if replay[string_counter][5] == "d":
         hero2.rotate("right")
 
-    if replay[string_counter][3] == "w":
+    if replay[string_counter][4] == "w":
         hero2.fire_bullet(hero2.bullets)
+
+    if replay[string_counter][7] == "s":
+        hero2.teleport()
 
     execute_collision(heroes,hero1,hero2)
     treasure = treasure_collision([hero1, hero2], treasure)
@@ -76,6 +82,8 @@ def replay(replay_path):
     display_treasure(treasure, screen)
     display_text(screen,60,20,'health: ' + str(hero1.health),255,0,0,20)
     display_text(screen, GAME_WIDTH / 2, 20, 'Score1: ' + str(score(hero1,hero2)) + "   Score2: " + str(score(hero2, hero1)), 255, 0, 0, 18)
+    display_text(screen, 60, 80, 'teleport cd: ' + str(hero1.teleport_cooldown), 255, 0, 0, 20)
+    display_text(screen, 700, 80, 'teleport cd: ' + str(hero2.teleport_cooldown), 255, 0, 0, 20)
     display_magazine(screen, 60, 60, hero1.magazine, hero1.reload)
     display_magazine(screen, 700, 60, hero2.magazine, hero2.reload)
     display_text(screen, 700, 20, 'health: ' + str(hero2.health), 255, 0, 0, 20)

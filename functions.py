@@ -2,7 +2,14 @@ import math
 import random
 from src.display_functions import *
 
-
+def int_from_string(string):
+    number = input(string)
+    try:
+        intek = int(number)
+    except:
+        print("podałeś złego inta")
+        return int_from_string(string)
+    return intek
 def distance(x1, y1, x2, y2):
     if x1 == x2 and y1 == y2:
         return 1
@@ -133,50 +140,6 @@ def execute_collision(heroes, hero1, hero2):
                             hero2.bullets[counter] = None
             counter += 1
 
-
-def create_new_individua(fitness, weights_length, biases_length):
-    best_fitness = max(fitness)
-    worst_fitness = min(fitness)
-    weights = []
-    biases = []
-    dir_path = "D:\\projekty\\warIO\\src\\population\\object"
-    passed = False
-    for i in range(weights_length):
-        mutation = random.randint(1, 101)
-        if mutation <= MUTATION_RATE:
-            weights.append(str(random.uniform(WEIGHTS_DOWN_CAP, WEIGHTS_TOP_CAP)) + '\n')
-        else:
-            while not passed:
-                propability = random.randint(worst_fitness, best_fitness)
-                file_number = random.randrange(0, len(fitness))
-                if fitness[file_number] >= propability:
-                    passed = True
-            passed = False
-            file_path = dir_path + str(file_number) + "\\weights.txt"
-            file = open(file_path)
-            lines = file.readlines()
-            weights.append(lines[i])
-            file.close()
-
-    for i in range(biases_length):
-        mutation = random.randint(1, 101)
-        if mutation <= MUTATION_RATE:
-            biases.append(str(random.uniform(BIASES_DOWN_CAP, BIASES_TOP_CAP)) + '\n')
-        else:
-            while not passed:
-                propability = random.randint(worst_fitness, best_fitness)
-                file_number = random.randrange(0, len(fitness))
-                if fitness[file_number] >= propability:
-                    passed = True
-            passed = False
-            file_path = dir_path + str(file_number) + "\\biases.txt"
-            file = open(file_path)
-            lines = file.readlines()
-            biases.append(lines[i])
-            file.close()
-    return [biases, weights]
-
-
 def return_inputs(hero1, hero2, treasure):
     """   return [distance_in_direction(hero1.position_x, hero1.position_y, hero1.angle, "hero", hero2) / 1200,
                distance_in_direction(hero1.position_x, hero1.position_y, hero1.angle, "bullet", hero2.bullets) / 1200,
@@ -206,7 +169,6 @@ def return_inputs(hero1, hero2, treasure):
                distance_in_direction(hero1.position_x, hero1.position_y, hero1.angle - (0.5 * math.pi), "wall",
                                      None) / 1200]"""
     bullets = []
-    treasure_inputs = []
     for i in range(len(hero2.bullets)):
         if hero2.bullets[i] == None:
             bullets.append([0, 0])
@@ -236,6 +198,8 @@ def return_inputs(hero1, hero2, treasure):
              hero1.magazine / 3,
              hero1.reload / 60,
              hero1.angle / (2 * math.pi),
+             1 - (hero1.teleport_cooldown/TELEPORT_COOLDOWN),
+             1 - (hero2.teleport_cooldown/TELEPORT_COOLDOWN),
              hero2.angle / (2 * math.pi)])
     # return([1 - (distance(hero1.position_x,hero1.position_y,hero2.position_x,hero2.position_y)/ math.sqrt(GAME_WIDTH ** 2 + GAME_HEIGHT ** 2)),
     #         angle(hero1,hero2)/ (math.pi * 2),])
@@ -282,12 +246,68 @@ def create_new_individual(fitness, weights_length, biases_length):
             biases.append(lines[i])
             file.close()
     return [biases, weights]
+# def create_new_individual(fitness, weights_length, biases_length):
+#     best_fitness = max(fitness)
+#     average_fitness = int(sum(fitness) / len(fitness))
+#     weights = []
+#     biases = []
+#     dir_path = "D:\\projekty\\warIO\\src\\population\\object"
+#     passed = False
+#
+#     for i in range(weights_length):
+#         while not passed:
+#             probability = random.randint(int(average_fitness), int(best_fitness))
+#             file_number = random.randrange(0, len(fitness))
+#             if fitness[file_number] >= probability:
+#                 passed = True
+#         mutation = random.randint(1, 1001)
+#         if mutation <= MUTATION_RATE:
+#             weights.append(str(random.uniform(WEIGHTS_DOWN_CAP, WEIGHTS_TOP_CAP)) + '\n')
+#         else:
+#             file_path = dir_path + str(file_number) + "\\weights.txt"
+#             file = open(file_path)
+#             lines = file.readlines()
+#             number = float(lines[i])
+#             mini_mutation = random.randrange(1, 100)
+#             if mini_mutation < 33:
+#                 number += WEIGHTS_TOP_CAP / 400
+#             if mini_mutation > 66:
+#                 number -= WEIGHTS_TOP_CAP / 400
+#             line = str(number) + '\n'
+#             weights.append(line)
+#             file.close()
 
+    for i in range(biases_length):
+        while not passed:
+            probability = random.randint(int(average_fitness), int(best_fitness))
+            file_number = random.randrange(0, len(fitness))
+            if fitness[file_number] >= probability:
+                passed = True
+        mutation = random.randint(1, 1001)
+        if mutation <= MUTATION_RATE:
+            biases.append(str(random.uniform(BIASES_DOWN_CAP, BIASES_TOP_CAP)) + '\n')
+        else:
+
+            file_path = dir_path + str(file_number) + "\\biases.txt"
+            file = open(file_path)
+            lines = file.readlines()
+            number = float(lines[i])
+            mini_mutation = random.randrange(1, 100)
+            if mini_mutation < 33:
+                number += BIASES_TOP_CAP / 400
+            if mini_mutation > 66:
+                number -= BIASES_TOP_CAP / 400
+            line = str(number) + '\n'
+            biases.append(line)
+            file.close()
+    return [biases, weights]
 
 def fitness_function(hero1, hero2):
     # return math.sqrt(GAME_HEIGHT **2 + GAME_WIDTH** 2) - distance(hero1.position_x,hero1.position_y,hero2.position_x,hero2.position_y)
     return score(hero1,hero2)
 
+def score(hero1, hero2):
+    return hero1.points + hero1.health * 10 + (100 - hero2.health * 10)
 
 def write_start_to_replay(file, hero1, hero2):
     file.write(str(hero1.position_x) + '\n')
@@ -296,6 +316,3 @@ def write_start_to_replay(file, hero1, hero2):
     file.write(str(hero2.position_x) + '\n')
     file.write(str(hero2.position_y) + '\n')
     file.write(str(hero2.angle) + '\n')
-
-def score(hero1, hero2):
-    return hero1.points + hero1.health * 10 + (100 - hero2.health * 10)

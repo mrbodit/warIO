@@ -14,6 +14,7 @@ class Hero:
         self.radius = HERO_RADIUS
         self.speed = HERO_SPEED
         self.angle = (random.randrange(0, 100) / 50) * math.pi
+        self.teleport_cooldown = TELEPORT_COOLDOWN
         self.magazine = 0
         self.reload = 0
         self.health = 10
@@ -36,7 +37,7 @@ class Hero:
             self.position_y = 0 + self.radius
 
         self.reload_bullets()
-
+        self.cooldowns()
     def rotate(self, direction):
         if direction == "right":
             self.angle = self.angle + (HERO_ROTATION_SPEED * math.pi)
@@ -63,6 +64,17 @@ class Hero:
                 bullets[2] = bullet(self.position_x, self.position_y, self.angle)
                 self.magazine -= 1
                 return
+
+    def cooldowns(self):
+        self.teleport_cooldown -= 1
+        if self.teleport_cooldown < 0:
+            self.teleport_cooldown = 0
+
+    def teleport(self):
+        if self.teleport_cooldown == 0:
+            self.position_x = GAME_WIDTH/2 - (self.position_x - (GAME_WIDTH/2))
+            self.position_y = GAME_HEIGHT / 2 - (self.position_y - (GAME_HEIGHT / 2))
+            self.teleport_cooldown = TELEPORT_COOLDOWN
 
     def reload_bullets(self):
         if self.magazine < 3:

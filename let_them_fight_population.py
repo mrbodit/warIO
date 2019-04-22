@@ -50,7 +50,7 @@ def let_them_fight_population(counter1,counter2):
     write_start_to_replay(replay_B, hero1, hero2)
     frames_counter = 0
     while running:
-        replay_string = ["_", "_", "_", "_", "_", "_"]
+        replay_string = ["_", "_", "_", "_", "_", "_", "_", "_"]
 
         ai_A_move = ai_A.calculate_output(return_inputs(hero1, hero2, treasure))
         ai_B_move = ai_B.calculate_output(return_inputs(hero2, hero1, treasure))
@@ -92,12 +92,16 @@ def let_them_fight_population(counter1,counter2):
 def do_ai_moves(output, replay_string, hero, number_of_hero):
     if output[0] > 0.5:
         hero.rotate("left")
-        replay_string[number_of_hero * 3 + 2] = "a"
+        replay_string[number_of_hero * 4 + 2] = "a"
 
     if output[1] > 0.5:
         hero.rotate("right")
-        replay_string[number_of_hero * 3 + 1] = "d"
+        replay_string[number_of_hero * 4 + 1] = "d"
 
     if output[2] > 0.5:
         hero.fire_bullet(hero.bullets)
-        replay_string[number_of_hero * 3 + 0] = "w"
+        replay_string[number_of_hero * 4 + 0] = "w"
+
+    if output[3] > 0.5:
+        hero.teleport()
+        replay_string[number_of_hero * 4 + 3] = "s"
