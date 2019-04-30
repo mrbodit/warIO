@@ -66,11 +66,17 @@ def fight_mode():
     execute_collision(heroes,hero1,hero2)
 
     clock.tick(60)
-    for hero in heroes:
-      hero.movement()
-      display_hero(hero,screen)
-      for bullet in hero.bullets:
-        display_bullet(bullet, screen)
+
+    hero1.movement(hero1.speed,hero2)
+    display_hero(hero1,screen)
+    for bullet in hero1.bullets:
+      display_bullet(bullet, screen)
+
+    hero2.movement(hero2.speed, hero1)
+    display_hero(hero2, screen)
+    for bullet in hero2.bullets:
+      display_bullet(bullet, screen)
+
 
     display_text(screen,60,20,'health: ' + str(hero1.health),255,0,0,20)
     display_text(screen, 700, 20, 'health: ' + str(hero2.health), 255, 0, 0, 20)

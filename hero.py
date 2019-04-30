@@ -2,6 +2,7 @@ import pygame
 import math
 import random
 from src.bullet import bullet
+from src.functions import *
 from src.global_variables import *
 
 
@@ -22,9 +23,10 @@ class Hero:
         self.color = color
         self.bullets = [None, None, None]
 
-    def movement(self):
-        self.x_speed = self.speed * math.cos(self.angle)
-        self.y_speed = self.speed * math.sin(self.angle)
+    def movement(self, speed, hero):
+
+        self.x_speed = speed * math.cos(self.angle)
+        self.y_speed = speed * math.sin(self.angle)
         self.position_x = self.position_x + self.x_speed
         self.position_y = self.position_y + self.y_speed
         if self.position_x + self.radius > GAME_WIDTH:
@@ -38,6 +40,7 @@ class Hero:
 
         self.reload_bullets()
         self.cooldowns()
+
     def rotate(self, direction):
         if direction == "right":
             self.angle = self.angle + (HERO_ROTATION_SPEED * math.pi)
@@ -72,7 +75,7 @@ class Hero:
 
     def teleport(self):
         if self.teleport_cooldown == 0:
-            self.position_x = GAME_WIDTH/2 - (self.position_x - (GAME_WIDTH/2))
+            self.position_x = GAME_WIDTH / 2 - (self.position_x - (GAME_WIDTH / 2))
             self.position_y = GAME_HEIGHT / 2 - (self.position_y - (GAME_HEIGHT / 2))
             self.teleport_cooldown = TELEPORT_COOLDOWN
 

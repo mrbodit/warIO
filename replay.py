@@ -73,20 +73,17 @@ def replay(replay_path):
     treasure = treasure_collision([hero1, hero2], treasure)
     clock.tick(fps)
 
-    for hero in heroes:
-      hero.movement()
-      display_hero(hero,screen)
-      for bullet in hero.bullets:
-        display_bullet(bullet,screen)
+    hero1.movement(hero1.speed,hero2)
+    display_hero(hero1,screen)
+    for bullet in hero1.bullets:
+      display_bullet(bullet, screen)
 
-    display_treasure(treasure, screen)
-    display_text(screen,60,20,'health: ' + str(hero1.health),255,0,0,20)
-    display_text(screen, GAME_WIDTH / 2, 20, 'Score1: ' + str(score(hero1,hero2)) + "   Score2: " + str(score(hero2, hero1)), 255, 0, 0, 18)
-    display_text(screen, 60, 80, 'teleport cd: ' + str(hero1.teleport_cooldown), 255, 0, 0, 20)
-    display_text(screen, 700, 80, 'teleport cd: ' + str(hero2.teleport_cooldown), 255, 0, 0, 20)
-    display_magazine(screen, 60, 60, hero1.magazine, hero1.reload)
-    display_magazine(screen, 700, 60, hero2.magazine, hero2.reload)
-    display_text(screen, 700, 20, 'health: ' + str(hero2.health), 255, 0, 0, 20)
+    hero2.movement(hero2.speed, hero1)
+    display_hero(hero2, screen)
+    for bullet in hero2.bullets:
+      display_bullet(bullet, screen)
+
+    display_everything_except_animations(screen, hero1, hero2, treasure, score)
     pygame.display.update()
     string_counter += 1
     if string_counter >= replay_length:

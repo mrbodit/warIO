@@ -27,10 +27,8 @@ def let_them_fight(counter):
 
     ai_A = DFF_Neural_Network()
     ai_A.create_network()
-    ai_A.set_connections()
     ai_B = DFF_Neural_Network()
     ai_B.create_network()
-    ai_B.set_connections()
 
     file_weights_A = open(dir_name_A + "\\weights.txt", "w+")
     file_biases_A = open(dir_name_A + "\\biases.txt", "w+")

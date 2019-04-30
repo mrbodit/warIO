@@ -74,3 +74,14 @@ def display_magazine(screen, x, y, magazine, reload):
         else:
             pygame.draw.rect(screen, color, [x + 51 * i - 40, y, 50, 10], 0)
     display_text(screen, x, y - 5, "Magazynek: ", 149, 55, 255, 20)
+
+def display_everything_except_animations(screen,hero1,hero2,treasure,score):
+    display_treasure(treasure, screen)
+    display_text(screen, GAME_WIDTH / 2, 60,
+                 'Score1: ' + str(score(hero1, hero2)) + "   Score2: " + str(score(hero2, hero1)), 255, 0, 0, 18)
+    display_magazine(screen, 60, 60, hero1.magazine, hero1.reload)
+    display_magazine(screen, 700, 60, hero2.magazine, hero2.reload)
+    display_text(screen, 60, 80, 'teleport cd: ' + str(hero1.teleport_cooldown), 255, 0, 0, 20)
+    display_text(screen, 700, 80, 'teleport cd: ' + str(hero2.teleport_cooldown), 255, 0, 0, 20)
+    display_text(screen, 60, 20, 'health: ' + str(hero1.health), 255, 0, 0, 20)
+    display_text(screen, 700, 20, 'health: ' + str(hero2.health), 255, 0, 0, 20)

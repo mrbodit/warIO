@@ -15,7 +15,7 @@ TREASURE_POINTS = 25
 
 NUMBER_OF_LAYERS = 4
 NUMBER_OF_FRAMES = 1200
-LAYERS = [18,18,14,4]
+LAYERS = [19,19,14,4]
 WEIGHTS_DOWN_CAP = -2
 WEIGHTS_TOP_CAP = 2
 BIASES_DOWN_CAP = -2
@@ -29,5 +29,4 @@ STRINGS_AT_START = 6
 
 NUMBER_OF_MATCHES = 5
 
-
-AI_PATH = "D:\\projekty\\warIO\\ai\\9staruch"
+AI_PATH = "D:\\projekty\\warIO\\ai\\11długowiecznix"

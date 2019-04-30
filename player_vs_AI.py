@@ -31,15 +31,8 @@ def player_vs_AI():
 
     ai = DFF_Neural_Network()
     ai.create_network()
-    ai.set_connections()
-
-    ##file_biases = open("D:\\projekty\\warIO\\ai\\biases.txt", "w+")
-    # file_weights = open("D:\\projekty\\warIO\\ai\\weights.txt", "w+")
+    
     replay = open("D:\\projekty\\warIO\\ai\\replay.txt", "w+")
-    # ai.draw_weights(file_weights)
-    # ai.draw_biases(file_biases)
-    # file_weights.close()
-    # file_biases.close()
 
     ai.get_weights(AI_PATH + "\\weights.txt")
     ai.get_biases(AI_PATH + "\\biases.txt")
@@ -106,26 +99,23 @@ def player_vs_AI():
         clock.tick(fps)
 
 
+        hero1.movement(hero1.speed, hero2)
+        display_hero(hero1, screen)
+        for bullet in hero1.bullets:
+            display_bullet(bullet, screen)
 
-        for hero in heroes:
-            hero.movement()
-            display_hero(hero, screen)
-            for bullet in hero.bullets:
-                display_bullet(bullet, screen)
+        hero2.movement(hero2.speed, hero1)
+        display_hero(hero2, screen)
+        for bullet in hero2.bullets:
+            display_bullet(bullet, screen)
 
         frames_counter += 1
-        # display_network(screen,840,50,ai,ai_move)
+        #display_network(screen,840,50,ai,ai_move)
+
+
 
         pygame.draw.rect(screen, [0, 0, 0], [GAME_WIDTH, 0, 5, GAME_HEIGHT])
-        display_treasure(treasure, screen)
-        display_text(screen, GAME_WIDTH / 2, 60,'Score1: ' + str(score(hero1, hero2)) + "   Score2: " + str(score(hero2, hero1)), 255, 0, 0, 18)
-        display_magazine(screen, 60, 60, hero1.magazine, hero1.reload)
-        display_magazine(screen, 700, 60, hero2.magazine, hero2.reload)
-        display_text(screen, 60, 80, 'teleport cd: ' + str(hero1.teleport_cooldown), 255, 0, 0, 20)
-        display_text(screen, 700, 80, 'teleport cd: ' + str(hero2.teleport_cooldown), 255, 0, 0, 20)
-        display_text(screen, 60, 20, 'health: ' + str(hero1.health), 255, 0, 0, 20)
-        display_text(screen, 700, 20, 'health: ' + str(hero2.health), 255, 0, 0, 20)
-        display_text(screen, GAME_WIDTH / 2, 20, 'FPS: ' + str(fps), 255, 0, 0, 20)
+        display_everything_except_animations(screen,hero1,hero2,treasure,score)
         pygame.display.update()
 
 

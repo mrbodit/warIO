@@ -181,7 +181,10 @@ def return_inputs(hero1, hero2, treasure):
     else:
         treasure_inputs = [(1 - distance(hero1.position_x,hero1.position_y, treasure.position_x,treasure.position_y) / math.sqrt(GAME_WIDTH ** 2 + GAME_HEIGHT ** 2)),
                                 angle(hero1,treasure) / (math.pi * 2)]
-
+    if hero1.teleport_cooldown == 0:
+        teleport_active = 1
+    else:
+        teleport_active = 0
     return ([abs((GAME_WIDTH / 2 - hero1.position_x) / (GAME_WIDTH / 2)),
              abs((GAME_HEIGHT / 2 - hero1.position_y) / (GAME_HEIGHT / 2)),
              1 - (distance(hero1.position_x, hero1.position_y, hero2.position_x, hero2.position_y) / math.sqrt(
@@ -199,6 +202,7 @@ def return_inputs(hero1, hero2, treasure):
              hero1.reload / 60,
              hero1.angle / (2 * math.pi),
              1 - (hero1.teleport_cooldown/TELEPORT_COOLDOWN),
+             teleport_active,
              1 - (hero2.teleport_cooldown/TELEPORT_COOLDOWN),
              hero2.angle / (2 * math.pi)])
     # return([1 - (distance(hero1.position_x,hero1.position_y,hero2.position_x,hero2.position_y)/ math.sqrt(GAME_WIDTH ** 2 + GAME_HEIGHT ** 2)),

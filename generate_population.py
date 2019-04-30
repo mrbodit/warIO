@@ -25,6 +25,8 @@ def generate_population(fitness,weights_length,biases_length,generations,number_
 
     else:
         for i in range(number):
+            if len(fitness) <= i:
+                fitness.append(0)
             population.append(create_new_individual(fitness,weights_length,biases_length))
 
         for i in range(number):

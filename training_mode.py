@@ -11,6 +11,7 @@ from src.let_them_fight import let_them_fight
 from src.let_them_fight_population import let_them_fight_population
 from src.replay import *
 from src.player_vs_AI import *
+from src.global_variables import *
 
 
 def training():
@@ -19,7 +20,7 @@ def training():
     fitness = []
     number_of_generations = 0
     while running:
-
+        stop = False
         screen = pygame.display.set_mode((GAME_WIDTH, GAME_HEIGHT))
         screen.fill((255, 255, 255))
         pygame.display.set_caption('Training menu')
@@ -52,13 +53,17 @@ def training():
                                     enemy_number = random.randrange(0, number_of_objects)
                                     if enemy_number != i:
                                         selfcheck = True
-                                [a, b] = let_them_fight_population(i, enemy_number)
+                                [a, b, learning_flag] = let_them_fight_population(i, enemy_number)
+                                if not learning_flag:
+                                    stop = True
                                 matches[i].append(a)
                                 matches[enemy_number].append(b)
                         for i in range(0, number_of_objects):
                             fitness[i] = sum(matches[i]) / len(matches[i])
                         print("generacja: " + str(number_of_generations) + "  average fitness: " + str(
                             sum(fitness) / len(fitness)))
+                        if stop:
+                            break
 
                 if event.key == pygame.K_y:
 
@@ -68,11 +73,15 @@ def training():
                         number_of_generations += 1
                         generate_population(fitness, WEIGHTS_LENGTH, BIASES_LENGTH, generations, number_of_objects)
                         for i in range(0, number_of_objects, 2):
-                            [a, b] = let_them_fight_population(i, i + 1)
+                            [a, b, learning_flag] = let_them_fight_population(i, i + 1)
+                            if not learning_flag:
+                                stop = True
                             fitness[i] = a
                             fitness[i + 1] = b
                         print("generacja: " + str(number_of_generations) + "  average fitness: " + str(
                             sum(fitness) / len(fitness)))
+                        if stop:
+                            break
 
                 if event.key == pygame.K_h:
                     generations = int_from_string("Enter number of generations: ")
@@ -85,13 +94,17 @@ def training():
                         for i in range(0, number_of_objects):
                             matches.append([])
                             for k in range(3):
-                                [a, b] = let_them_fight_population(i, AI_PATH)
+                                [a, b, learning_flag] = let_them_fight_population(i, AI_PATH)
+                                if not learning_flag:
+                                    stop = True
                                 fitness_of_enemy += b
                                 matches[i].append(a)
                             fitness[i] = sum(matches[i]) / len(matches[i])
                         print("generacja: " + str(number_of_generations) + "  average fitness: " + str(
                             sum(fitness) / len(fitness)) + "fitness of enemy: " + str(
                             fitness_of_enemy / (len(matches) * 3)))
+                        if stop:
+                            break
 
                 if event.key == pygame.K_p:
                     for i in range(len(fitness)):

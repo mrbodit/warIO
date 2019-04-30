@@ -7,7 +7,6 @@ from src.global_variables import *
 from src.hero import Hero
 from src.treasure import try_respawn_treasure, treasure_collision
 
-
 def let_them_fight_population(counter1,counter2):
     dir_name_A = "D:\\projekty\\warIO\\src\\population\\object" + str(counter1)
     if len(str(counter2)) <= 4:
@@ -31,12 +30,11 @@ def let_them_fight_population(counter1,counter2):
 
     ai_A = DFF_Neural_Network()
     ai_A.create_network()
-    ai_A.set_connections()
     ai_B = DFF_Neural_Network()
     ai_B.create_network()
-    ai_B.set_connections()
 
     treasure = None
+    learning_flag = True
 
     replay_A = open(dir_name_A + "\\replay.txt", "w+")
     replay_B = open(dir_name_B + "\\replay.txt", "w+")
@@ -50,6 +48,13 @@ def let_them_fight_population(counter1,counter2):
     write_start_to_replay(replay_B, hero1, hero2)
     frames_counter = 0
     while running:
+
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_s:
+                    print("stopped")
+                    learning_flag = False
+
         replay_string = ["_", "_", "_", "_", "_", "_", "_", "_"]
 
         ai_A_move = ai_A.calculate_output(return_inputs(hero1, hero2, treasure))
@@ -76,18 +81,20 @@ def let_them_fight_population(counter1,counter2):
         replay_B.write(''.join(replay_string) + "\n")
 
 
-        for hero in heroes:
-            hero.movement()
-            if hero.health <= 0:
-                running = False
-            if frames_counter >= NUMBER_OF_FRAMES:
-                running = False
+        hero1.movement(hero1.speed,hero2)
+        if hero1.health <= 0:
+            running = False
+        hero2.movement(hero2.speed,hero1)
+        if hero2.health <= 0:
+            running = False
+        if frames_counter >= NUMBER_OF_FRAMES:
+            running = False
 
         frames_counter += 1
 
     fitness_A = fitness_function(hero1, hero2)
     fitness_B = fitness_function(hero2, hero1)
-    return [fitness_A,fitness_B]
+    return [fitness_A, fitness_B, learning_flag]
 
 def do_ai_moves(output, replay_string, hero, number_of_hero):
     if output[0] > 0.5:

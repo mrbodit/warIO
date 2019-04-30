@@ -39,6 +39,35 @@ class DFF_Neural_Network:
                     self.hidden_layers[i - 1].append(neuron)
                 else:
                     self.output_layer.append(neuron)
+        self.set_connections()
+
+    def create_network_from_file(self, file):
+        lines = file.readlines()
+        number_of_layers = int(lines[0])
+        table_of_layers = []
+        layers = lines[1].split(',')
+        for i in range(number_of_layers):
+            table_of_layers.append(int(layers[i]))
+        if number_of_layers < 2:
+            print('za mało warstw neuronów chyba')
+            return False
+
+        number = 1
+        for i in range(number_of_layers):
+            self.all_layers.append([])
+            if i != 0 and i != (number_of_layers - 1):
+                self.hidden_layers.append([])
+            for j in range(table_of_layers[i]):
+                neuron = Neuron(number)
+                number += 1
+                self.all_layers[i].append(neuron)
+                if i == 0:
+                    self.input_layer.append(neuron)
+                elif i != (number_of_layers - 1):
+                    self.hidden_layers[i - 1].append(neuron)
+                else:
+                    self.output_layer.append(neuron)
+        self.set_connections()
 
     def set_connections(self):
         for neuron1 in self.input_layer:
