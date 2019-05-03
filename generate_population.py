@@ -10,8 +10,8 @@ def generate_population(fitness,weights_length,biases_length,generations,number_
     else:
         number = number_of_objects
     population = []
-    if len(fitness)== 0 :
-        for i in range(0,number):
+    if len(fitness) == 0:
+        for i in range(0, number):
             dir_name = "D:\\projekty\\warIO\\src\\population\\object" + str(i)
             if not os.path.exists(dir_name):
                 os.mkdir(dir_name)

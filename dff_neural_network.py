@@ -90,13 +90,13 @@ class DFF_Neural_Network:
             for j in range(len(self.all_layers[i])):
                 for k in range(len(self.all_layers[i][j].children)):
                     # file.write(str(random.gauss(0, 1) * math.sqrt(1 / len(self.all_layers[i]))) + '\n')
-                    file.write(str(random.uniform(WEIGHTS_DOWN_CAP, WEIGHTS_TOP_CAP)) + '\n')
+                    file.write(str(random.normalvariate(0, 1)/len(self.all_layers[i])**0.5) + '\n')
 
     def draw_biases(self, file):
         for i in range(1, len(self.all_layers)):
             for j in range(len(self.all_layers[i])):
                 # file.write(str(random.gauss(0, len(self.all_layers[i - 1]))) + '\n')
-                file.write(str(random.uniform(BIASES_DOWN_CAP, BIASES_TOP_CAP)) + '\n')
+                file.write(str(random.normalvariate(0, 1)/len(self.all_layers[i])**0.5) + '\n')
 
     def calculate_output(self, inputs):
         outcome = []
@@ -118,11 +118,11 @@ class DFF_Neural_Network:
         return outcome
 
     def activation_function(self, number):
-        # return 1 / (1 + math.exp(-number))
-        if number <= 0:
-            return 0.01 * number
-        else:
-            return number
+        return 1 / (1 + math.exp(-number))
+        # if number <= 0:
+        #     return 0.01 * number
+        # else:
+        #     return number
 
     def get_weights(self, file_path):
         self.number_of_weights = 0

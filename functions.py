@@ -37,27 +37,27 @@ def colliding_with_bullet(x, y, bullet):
 
 
 def draw_weights(file):
-    for i in range(WEIGHTS_LENGTH):
-        # file.write(str(random.gauss(0, 1) * math.sqrt(1 / len(self.all_layers[i]))) + '\n')
-        file.write(str(random.uniform(WEIGHTS_DOWN_CAP, WEIGHTS_TOP_CAP)) + '\n')
-
+    for i in range(len(LAYERS) - 1):
+        for j in range(LAYERS[i]):
+            for k in range(LAYERS[i+1]):
+                file.write(str(random.gauss(0,1)/LAYERS[i]**0.5) + '\n')
 
 def draw_biases(file):
     for i in range(BIASES_LENGTH):
-        file.write(str(random.uniform(BIASES_DOWN_CAP, BIASES_TOP_CAP)) + '\n')
+        file.write(str(random.gauss(0, 1)) + '\n')
 
 
-def angle(hero1, object):
-    if hero1.position_y < object.position_y:
-        angle = math.pi + math.acos((hero1.position_x - object.position_x) / (
-            distance(hero1.position_x, hero1.position_y, object.position_x, object.position_y)))
+def angle(hero1, thing):
+    if hero1.position_y < thing.position_y:
+        angle = math.pi + math.acos((hero1.position_x - thing.position_x) / (
+            distance(hero1.position_x, hero1.position_y, thing.position_x, thing.position_y)))
         if angle + hero1.angle > math.pi * 2:
             return (angle + hero1.angle - math.pi * 2)
         else:
             return (angle + hero1.angle)
     else:
-        angle = math.pi - math.acos((hero1.position_x - object.position_x) / (
-            distance(hero1.position_x, hero1.position_y, object.position_x, object.position_y)))
+        angle = math.pi - math.acos((hero1.position_x - thing.position_x) / (
+            distance(hero1.position_x, hero1.position_y, thing.position_x, thing.position_y)))
         if angle + hero1.angle > math.pi * 2:
             return (angle + hero1.angle - math.pi * 2)
         else:
@@ -185,8 +185,8 @@ def return_inputs(hero1, hero2, treasure):
         teleport_active = 1
     else:
         teleport_active = 0
-    return ([abs((GAME_WIDTH / 2 - hero1.position_x) / (GAME_WIDTH / 2)),
-             abs((GAME_HEIGHT / 2 - hero1.position_y) / (GAME_HEIGHT / 2)),
+    return ([#abs((GAME_WIDTH / 2 - hero1.position_x) / (GAME_WIDTH / 2)),    #
+             #abs((GAME_HEIGHT / 2 - hero1.position_y) / (GAME_HEIGHT / 2)),
              1 - (distance(hero1.position_x, hero1.position_y, hero2.position_x, hero2.position_y) / math.sqrt(
                  GAME_WIDTH ** 2 + GAME_HEIGHT ** 2)),
              angle(hero1, hero2) / (math.pi * 2),
@@ -200,11 +200,8 @@ def return_inputs(hero1, hero2, treasure):
              treasure_inputs[1],
              hero1.magazine / 3,
              hero1.reload / 60,
-             hero1.angle / (2 * math.pi),
              1 - (hero1.teleport_cooldown/TELEPORT_COOLDOWN),
-             teleport_active,
-             1 - (hero2.teleport_cooldown/TELEPORT_COOLDOWN),
-             hero2.angle / (2 * math.pi)])
+             teleport_active])
     # return([1 - (distance(hero1.position_x,hero1.position_y,hero2.position_x,hero2.position_y)/ math.sqrt(GAME_WIDTH ** 2 + GAME_HEIGHT ** 2)),
     #         angle(hero1,hero2)/ (math.pi * 2),])
 
@@ -216,8 +213,9 @@ def create_new_individual(fitness, weights_length, biases_length):
     biases = []
     dir_path = "D:\\projekty\\warIO\\src\\population\\object"
     passed = False
-
+    number_of_weight = 0
     for i in range(weights_length):
+        number_of_weight += 1
         while not passed:
             probability = random.randint(int(average_fitness), int(best_fitness))
             file_number = random.randrange(0, len(fitness))
@@ -225,7 +223,13 @@ def create_new_individual(fitness, weights_length, biases_length):
                 passed = True
         mutation = random.randint(1, 1001)
         if mutation <= MUTATION_RATE:
-            weights.append(str(random.uniform(WEIGHTS_DOWN_CAP, WEIGHTS_TOP_CAP)) + '\n')
+            counter = 0
+            for j in range(len(LAYERS) - 1):
+                counter += LAYERS[j] * LAYERS[j+1]
+                if counter >= number_of_weight:
+                    number_of_layer = j
+                    break
+            weights.append(str(random.normalvariate(0,1)/LAYERS[number_of_layer]**0.5) + '\n')
         else:
             file_path = dir_path + str(file_number) + "\\weights.txt"
             file = open(file_path)
@@ -241,7 +245,7 @@ def create_new_individual(fitness, weights_length, biases_length):
                 passed = True
         mutation = random.randint(1, 1001)
         if mutation <= MUTATION_RATE:
-            biases.append(str(random.uniform(BIASES_DOWN_CAP, BIASES_TOP_CAP)) + '\n')
+            biases.append(str(random.gauss(0, 1)) + '\n')
         else:
 
             file_path = dir_path + str(file_number) + "\\biases.txt"
@@ -280,31 +284,31 @@ def create_new_individual(fitness, weights_length, biases_length):
 #             line = str(number) + '\n'
 #             weights.append(line)
 #             file.close()
-
-    for i in range(biases_length):
-        while not passed:
-            probability = random.randint(int(average_fitness), int(best_fitness))
-            file_number = random.randrange(0, len(fitness))
-            if fitness[file_number] >= probability:
-                passed = True
-        mutation = random.randint(1, 1001)
-        if mutation <= MUTATION_RATE:
-            biases.append(str(random.uniform(BIASES_DOWN_CAP, BIASES_TOP_CAP)) + '\n')
-        else:
-
-            file_path = dir_path + str(file_number) + "\\biases.txt"
-            file = open(file_path)
-            lines = file.readlines()
-            number = float(lines[i])
-            mini_mutation = random.randrange(1, 100)
-            if mini_mutation < 33:
-                number += BIASES_TOP_CAP / 400
-            if mini_mutation > 66:
-                number -= BIASES_TOP_CAP / 400
-            line = str(number) + '\n'
-            biases.append(line)
-            file.close()
-    return [biases, weights]
+#
+#     for i in range(biases_length):
+#         while not passed:
+#             probability = random.randint(int(average_fitness), int(best_fitness))
+#             file_number = random.randrange(0, len(fitness))
+#             if fitness[file_number] >= probability:
+#                 passed = True
+#         mutation = random.randint(1, 1001)
+#         if mutation <= MUTATION_RATE:
+#             biases.append(str(random.uniform(BIASES_DOWN_CAP, BIASES_TOP_CAP)) + '\n')
+#         else:
+#
+#             file_path = dir_path + str(file_number) + "\\biases.txt"
+#             file = open(file_path)
+#             lines = file.readlines()
+#             number = float(lines[i])
+#             mini_mutation = random.randrange(1, 100)
+#             if mini_mutation < 33:
+#                 number += BIASES_TOP_CAP / 400
+#             if mini_mutation > 66:
+#                 number -= BIASES_TOP_CAP / 400
+#             line = str(number) + '\n'
+#             biases.append(line)
+#             file.close()
+#     return [biases, weights]
 
 def fitness_function(hero1, hero2):
     # return math.sqrt(GAME_HEIGHT **2 + GAME_WIDTH** 2) - distance(hero1.position_x,hero1.position_y,hero2.position_x,hero2.position_y)
